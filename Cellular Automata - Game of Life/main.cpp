@@ -19,8 +19,8 @@ public:
     ~Cell() {
     }
 
-    void Func() {
-        std::cout << Alive << std::endl;
+    int IsAlive() {
+        return Alive;
     }
 
     void UpdateColor() {
@@ -72,7 +72,15 @@ public:
         }
     }
 
-
+    int FindNeighbors() {
+        int sum = 0;
+        for (std::size_t i = 0; i < cells.size(); i++) {
+            for (std::size_t j = 0; j < cells[i].size() - 1; j++) {
+                sum += cells[i-1][j].IsAlive();
+            }
+        }
+        return sum;
+    }
 
 
 private:
