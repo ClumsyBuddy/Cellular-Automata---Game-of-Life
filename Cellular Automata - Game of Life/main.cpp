@@ -19,6 +19,10 @@ public:
     ~Cell() {
     }
 
+    void Func() {
+        std::cout << Alive << std::endl;
+    }
+
     void UpdateColor() {
         switch (Alive)
         {
@@ -29,10 +33,6 @@ public:
             _rect.setFillColor(sf::Color::White);
             break;
         }
-    }
-
-    void SetPosition(int x, int y) {
-
     }
 
     void Draw() {
@@ -53,19 +53,61 @@ private:
 
 
 
+class CellManager {
+public:
+    CellManager(sf::RenderWindow &win) : window(win) {
+        CreateCells();
+
+    }
+    ~CellManager(){}
+
+    void DrawCells() {
+        std::vector<std::vector<Cell> >::iterator row;
+        std::vector<Cell>::iterator col;
+        for (row = cells.begin(); row != cells.end(); row++) {
+            for (col = row->begin(); col != row->end(); col++) {
+                col->UpdateColor();
+                window.draw(col->RRect());
+            }
+        }
+    }
+
+
+
+
+private:
+    void CreateCells() {
+        for (int i = 0; i < CellAmountX; i++) {
+            cells.push_back(std::vector<Cell>());
+            for (int j = 0; j < CellAmountY; j++) {
+                cells[i].push_back(Cell(window, i, j));
+            }
+        }
+    }
+
+    std::vector<std::vector<Cell>> cells;
+    std::vector<std::vector<Cell>> next;
+    sf::RenderWindow &window;
+    int CellAmountX = 50;
+    int CellAmountY = 25;
+
+
+};
+
+
+
+
+
+
+
 int main()
 {
     srand(time(NULL));
     sf::RenderWindow window(sf::VideoMode(800, 400), "Cellular Automata");
-    std::vector<std::vector<Cell>> _Cells;
 
-    for (int i = 0; i < 50; i++) {
-        _Cells.push_back(std::vector<Cell>());
-        for (int j = 0; j < 25; j++) {
-            _Cells[i].push_back(Cell(window, i, j));
-        }
-    }
+    CellManager CM(window);
 
+    CM.Func();
     while (window.isOpen())
     {
         sf::Event event;
@@ -76,15 +118,7 @@ int main()
         }
 
         window.clear();
-        std::vector<std::vector<Cell> >::iterator row;
-        std::vector<Cell>::iterator col;
-        for (row = _Cells.begin(); row != _Cells.end(); row++) {
-            for (col = row->begin(); col != row->end(); col++) {
-                col->UpdateColor();
-                window.draw(col->RRect());
-            }
-        }
-
+        CM.DrawCells();
         window.display();
     }
 
