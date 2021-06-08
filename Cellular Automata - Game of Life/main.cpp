@@ -3,144 +3,75 @@
 #include <random>
 #include <time.h>
 
-class Cell{
-public:
-
-    Cell(sf::RenderWindow& win, int x, int y) : window(win) {
-        
-        Alive = rand() % 2;
-
-        PositionX = x * RectSize;
-        PositionY = y * RectSize;
-
-        _rect.setSize(sf::Vector2f(RectSize, RectSize));
-        _rect.setPosition(PositionX, PositionY);
-    }
-    ~Cell() {
-    }
-
-    int IsAlive() {
-        return Alive;
-    }
-
-    void ToggleCell() {
-        Alive = !Alive;
-    }
-
-    void UpdateColor() {
-        switch (Alive)
-        {
-        case true:
-            _rect.setFillColor(sf::Color::Black);
-            break;
-        case false:
-            _rect.setFillColor(sf::Color::White);
-            break;
-        }
-    }
-
-    void Draw() {
-        window.draw(_rect);
-    }
-
-    sf::RectangleShape RRect() {
-        return _rect;
-    }
-
-private:
-    bool Alive;
-    int PositionX, PositionY;
-    int RectSize = 16;
-    sf::RectangleShape _rect;
-    sf::RenderWindow &window;
-};
-
 
 
 class CellManager {
 public:
-    CellManager(sf::RenderWindow &win) : window(win) {
-        CreateCells();
-
+    CellManager(sf::RenderWindow &win, int Width, int Height) : window(win){
+        XRectAmount = Width / RectSize;
+        YRectAmount = Height/ RectSize;
+        InitRects();
     }
     ~CellManager(){}
 
-    void DrawCells() {
-        std::vector<std::vector<Cell> >::iterator row;
-        std::vector<Cell>::iterator col;
-        for (row = cells.begin(); row != cells.end(); row++) {
-            for (col = row->begin(); col != row->end(); col++) {
-                col->UpdateColor();
-                window.draw(col->RRect());
+    void InitRects() {
+        for (int i = 0; i < XRectAmount + 1; i++) {
+            _rect.push_back(std::vector<sf::RectangleShape>());
+            cells.push_back(std::vector<bool>());
+            for (int j = 0; j < YRectAmount + 1; j++) {
+                cells[i].push_back(RandomReturn());
+                _rect[i].push_back(sf::RectangleShape());
+                if (cells[i][j] == 0) {
+                    _rect[i][j].setFillColor(sf::Color::White);
+                }else{
+                    _rect[i][j].setFillColor(sf::Color::Black);
+                }
+                _rect[i][j].setSize(sf::Vector2f(RectSize, RectSize));
+                _rect[i][j].setOutlineColor(sf::Color::Black);
+                _rect[i][j].setOutlineThickness(1);
+                _rect[i][j].setPosition(i * RectSize, j *RectSize);
             }
         }
     }
 
-    int FindNeighbors() {
-        int sum = 0;
-        next = cells;
-        for (std::size_t i = 0; i < cells.size()-1; i++) {
-            for (std::size_t j = 0; j < cells[i].size()-1; j++) {
-                if (i != cells.size() && j != cells[i].size() && i > 0 && j > 0) {
-                    sum += cells[i + 1][j].IsAlive();
-                    sum += cells[i - 1][j].IsAlive();
-                    sum += cells[i + 1][j + 1].IsAlive();
-                    sum += cells[i - 1][j - 1].IsAlive();
-                    sum += cells[i][j - 1].IsAlive();
-                    sum += cells[i][j + 1].IsAlive();
-                    sum += cells[i + 1][j - 1].IsAlive();
-                    sum += cells[i - 1][j + 1].IsAlive();
-                    if (sum < 2 && cells[i][j].IsAlive() == true) {
-                        cells[i][j].ToggleCell();
-                    }
-                    else if (sum > 3 && cells[i][j].IsAlive() == true) {
-                        cells[i][j].ToggleCell();
-                    }
-                    else if (sum == 2 && cells[i][j].IsAlive() == false) {
-                        cells[i][j].ToggleCell();
-                    }
-                    sum *= 0;
-                }
-                else {
-                    continue;
-                }
-            }
-        }
-        return sum;
+    bool RandomReturn() {
+        return rand() % 2;
     }
 
+    void Update() {
+        
+    }
+
+    void Draw() {
+        for (int i = 0; i < _rect.size() - 1; i++) {
+            for (int j = 0; j < _rect[i].size() - 1; j++) {
+                window.draw(_rect[i][j]);
+            }
+        }
+    }
 
 private:
-    void CreateCells() {
-        for (int i = 0; i < CellAmountX; i++) {
-            cells.push_back(std::vector<Cell>());
-            for (int j = 0; j < CellAmountY; j++) {
-                cells[i].push_back(Cell(window, i, j));
-            }
-        }
-    }
-
-    std::vector<std::vector<Cell>> cells;
-    std::vector<std::vector<Cell>> next;
+    int RectSize = 10;
+    int XRectAmount;
+    int YRectAmount;
+    std::vector<std::vector<sf::RectangleShape>> _rect;
     sf::RenderWindow &window;
-    int CellAmountX = 50;
-    int CellAmountY = 25;
-
-
+    std::vector<std::vector<bool>> cells;
 };
-
-
-
 
 
 
 
 int main()
 {
-    srand(time(NULL));
-    sf::RenderWindow window(sf::VideoMode(800, 400), "Cellular Automata");
+    int ScreenWidth = 800;
+    int ScreenHeight = 400;
 
-    CellManager CM(window);
+    srand(time(NULL));
+    sf::RenderWindow window(sf::VideoMode(ScreenWidth, ScreenHeight), "Cellular Automata");
+
+    CellManager CM(window, ScreenWidth, ScreenHeight);
+
     while (window.isOpen())
     {
         sf::Event event;
@@ -148,12 +79,15 @@ int main()
         {
             if (event.type == sf::Event::Closed)
                 window.close();
+            if (event.type == sf::Event::MouseButtonPressed) {
+                continue;
+            }
         }
 
         window.clear();
-        CM.DrawCells();
+        CM.Draw();
         window.display();
-        CM.FindNeighbors();
+        
     }
 
     return 0;
