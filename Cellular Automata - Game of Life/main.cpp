@@ -35,7 +35,13 @@ public:
     }
 
     bool RandomReturn() {
-        return rand() % 2;
+        int num = rand() % 20 + 0;
+        if (num > 10) {
+            return true;
+        }
+        else {
+            return false;
+        }
     }
 
     void Update() {
@@ -52,25 +58,22 @@ public:
                     sum += next_cells[i][j + 1];
                     sum += next_cells[i + 1][j - 1];
                     sum += next_cells[i - 1][j + 1];
-                    if (sum < 2) {
-                        next_cells[i][j] = false;
+                    if (sum < 2 && next_cells[i][j] == true) {
+                        cells[i][j] = false;
                     }
-                    else if (sum > 3) {
-                        next_cells[i][j] = false;
+                    else if (sum > 3 && next_cells[i][j] == true) {
+                        cells[i][j] = false;
                     }
                     else if ((sum == 2 || sum == 3) && next_cells[i][j] == true) {
-                        next_cells[i][j] = true;
+                        cells[i][j] = true;
                     }
                     else if (sum == 3 && next_cells[i][j] == false) {
-                        next_cells[i][j] = true;
+                        cells[i][j] = true;
                     }
-                    //std::cout << sum << std::endl;
                 }
                 sum *= 0;
-                //cells[i][j] = next_cells[i][j];
             }
         }
-        cells = next_cells;
     }
 
     void UpdateColor() {
@@ -86,6 +89,10 @@ public:
         }
     }
 
+    void UpdateCells() {
+        //cells = next_cells;
+    }
+
 
     void Draw() {
         for (int i = 0; i < _rect.size() - 1; i++) {
@@ -96,7 +103,7 @@ public:
     }
 
 private:
-    int RectSize = 10;
+    int RectSize = 5;
     int XRectAmount;
     int YRectAmount;
     std::vector<std::vector<sf::RectangleShape>> _rect;
@@ -135,6 +142,7 @@ int main()
         window.display();
         CM.Update();
         CM.UpdateColor();
+        CM.UpdateCells();
     }
 
     return 0;
