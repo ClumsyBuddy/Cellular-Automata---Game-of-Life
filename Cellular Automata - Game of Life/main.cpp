@@ -27,8 +27,8 @@ public:
                     _rect[i][j].setFillColor(sf::Color::Black);
                 }
                 _rect[i][j].setSize(sf::Vector2f(RectSize, RectSize));
-                _rect[i][j].setOutlineColor(sf::Color::Black);
-                _rect[i][j].setOutlineThickness(1);
+                //_rect[i][j].setOutlineColor(sf::Color::Black);
+                //_rect[i][j].setOutlineThickness(1);
                 _rect[i][j].setPosition(i * RectSize, j *RectSize);
             }
         }
@@ -39,8 +39,50 @@ public:
     }
 
     void Update() {
-        
+        next_cells = cells;
+        int sum = 0;
+        for (int i = 0; i < next_cells.size() - 1; i++) {
+            for (int j = 0; j < next_cells[i].size() - 1; j++) {
+                if (i != next_cells.size() && j != next_cells[i].size() && i > 0 && j > 0) {
+                    sum += next_cells[i + 1][j];
+                    sum += next_cells[i - 1][j];
+                    sum += next_cells[i + 1][j + 1];
+                    sum += next_cells[i - 1][j - 1];
+                    sum += next_cells[i][j - 1];
+                    sum += next_cells[i][j + 1];
+                    sum += next_cells[i + 1][j - 1];
+                    sum += next_cells[i - 1][j + 1];
+                    if (sum < 2) {
+                        next_cells[i][j] = false;
+                    }
+                    else if (sum > 3) {
+                        next_cells[i][j] = false;
+                    }
+                    else if (sum == 2 && next_cells[i][j] == false) {
+                        next_cells[i][j] = true;
+                    }
+                    //std::cout << sum << std::endl;
+                }
+                sum *= 0;
+                //cells[i][j] = next_cells[i][j];
+            }
+        }
+        cells = next_cells;
     }
+
+    void UpdateColor() {
+        for (int i = 0; i < cells.size() - 1; i++) {
+            for (int j = 0; j < cells[i].size() - 1; j++) {
+                if (cells[i][j] == true) {
+                    _rect[i][j].setFillColor(sf::Color::Black);
+                }
+                else {
+                    _rect[i][j].setFillColor(sf::Color::White);
+                }
+            }
+        }
+    }
+
 
     void Draw() {
         for (int i = 0; i < _rect.size() - 1; i++) {
@@ -57,6 +99,7 @@ private:
     std::vector<std::vector<sf::RectangleShape>> _rect;
     sf::RenderWindow &window;
     std::vector<std::vector<bool>> cells;
+    std::vector<std::vector<bool>> next_cells;
 };
 
 
@@ -87,7 +130,8 @@ int main()
         window.clear();
         CM.Draw();
         window.display();
-        
+        CM.Update();
+        CM.UpdateColor();
     }
 
     return 0;
