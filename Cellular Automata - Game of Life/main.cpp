@@ -58,7 +58,10 @@ public:
                     else if (sum > 3) {
                         next_cells[i][j] = false;
                     }
-                    else if (sum == 2 && next_cells[i][j] == false) {
+                    else if ((sum == 2 || sum == 3) && next_cells[i][j] == true) {
+                        next_cells[i][j] = true;
+                    }
+                    else if (sum == 3 && next_cells[i][j] == false) {
                         next_cells[i][j] = true;
                     }
                     //std::cout << sum << std::endl;
