@@ -23,6 +23,10 @@ public:
         return Alive;
     }
 
+    void ToggleCell() {
+        Alive = !Alive;
+    }
+
     void UpdateColor() {
         switch (Alive)
         {
@@ -74,9 +78,32 @@ public:
 
     int FindNeighbors() {
         int sum = 0;
-        for (std::size_t i = 0; i < cells.size(); i++) {
-            for (std::size_t j = 0; j < cells[i].size() - 1; j++) {
-                sum += cells[i-1][j].IsAlive();
+        next = cells;
+        for (std::size_t i = 0; i < cells.size()-1; i++) {
+            for (std::size_t j = 0; j < cells[i].size()-1; j++) {
+                if (i != cells.size() && j != cells[i].size() && i > 0 && j > 0) {
+                    sum += cells[i + 1][j].IsAlive();
+                    sum += cells[i - 1][j].IsAlive();
+                    sum += cells[i + 1][j + 1].IsAlive();
+                    sum += cells[i - 1][j - 1].IsAlive();
+                    sum += cells[i][j - 1].IsAlive();
+                    sum += cells[i][j + 1].IsAlive();
+                    sum += cells[i + 1][j - 1].IsAlive();
+                    sum += cells[i - 1][j + 1].IsAlive();
+                    if (sum < 2 && cells[i][j].IsAlive() == true) {
+                        cells[i][j].ToggleCell();
+                    }
+                    else if (sum > 3 && cells[i][j].IsAlive() == true) {
+                        cells[i][j].ToggleCell();
+                    }
+                    else if (sum == 2 && cells[i][j].IsAlive() == false) {
+                        cells[i][j].ToggleCell();
+                    }
+                    sum *= 0;
+                }
+                else {
+                    continue;
+                }
             }
         }
         return sum;
@@ -114,8 +141,6 @@ int main()
     sf::RenderWindow window(sf::VideoMode(800, 400), "Cellular Automata");
 
     CellManager CM(window);
-
-    CM.Func();
     while (window.isOpen())
     {
         sf::Event event;
@@ -128,6 +153,7 @@ int main()
         window.clear();
         CM.DrawCells();
         window.display();
+        CM.FindNeighbors();
     }
 
     return 0;
