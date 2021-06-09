@@ -2,7 +2,7 @@
 #include <iostream>
 #include <random>
 #include <time.h>
-
+#include <Windows.h>
 
 
 class CellManager {
@@ -49,15 +49,20 @@ public:
         int sum = 0;
         for (int i = 0; i < next_cells.size() - 1; i++) {
             for (int j = 0; j < next_cells[i].size() - 1; j++) {
-                if (i != next_cells.size() && j != next_cells[i].size() && i > 0 && j > 0) {
-                    sum += next_cells[i + 1][j];
-                    sum += next_cells[i - 1][j];
-                    sum += next_cells[i + 1][j + 1];
-                    sum += next_cells[i - 1][j - 1];
-                    sum += next_cells[i][j - 1];
-                    sum += next_cells[i][j + 1];
-                    sum += next_cells[i + 1][j - 1];
-                    sum += next_cells[i - 1][j + 1];
+
+                for (int x = -1; x < 2; x++) {
+                        for (int y = -1; y < 2; y++) {
+                            if (x == 0 && y == 0) {
+                                continue;
+                            }
+                            else {
+                                int cols = (i + x + (next_cells.size()-1)) % (next_cells.size()-1);
+                                int rows = (j + y + (next_cells[i].size()-1)) % (next_cells[i].size()-1);
+                                sum += next_cells[cols][rows];
+                            }
+                        }
+                    }
+
                     if (sum < 2 && next_cells[i][j] == true) {
                         cells[i][j] = false;
                     }
@@ -70,29 +75,20 @@ public:
                     else if (sum == 3 && next_cells[i][j] == false) {
                         cells[i][j] = true;
                     }
-                }
+                    UpdateColor(i, j);
                 sum *= 0;
             }
         }
     }
 
-    void UpdateColor() {
-        for (int i = 0; i < cells.size() - 1; i++) {
-            for (int j = 0; j < cells[i].size() - 1; j++) {
-                if (cells[i][j] == true) {
-                    _rect[i][j].setFillColor(sf::Color::Black);
-                }
-                else {
-                    _rect[i][j].setFillColor(sf::Color::White);
-                }
-            }
+    void UpdateColor(int i, int j) {
+        if (cells[i][j] == true) {
+            _rect[i][j].setFillColor(sf::Color::Black);
+        }
+        else {
+            _rect[i][j].setFillColor(sf::Color::White);
         }
     }
-
-    void UpdateCells() {
-        //cells = next_cells;
-    }
-
 
     void Draw() {
         for (int i = 0; i < _rect.size() - 1; i++) {
@@ -141,8 +137,6 @@ int main()
         CM.Draw();
         window.display();
         CM.Update();
-        CM.UpdateColor();
-        CM.UpdateCells();
     }
 
     return 0;
