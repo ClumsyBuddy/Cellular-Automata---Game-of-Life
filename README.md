@@ -13,4 +13,4 @@ I condenced everything down to a single class that handles everything cell relat
 The class creates a vector of vectors of booleans and a vector of vectors of rectangles.
 Using the vectors you can simple change if booleans are true and false to determine if
 the rectangles should be draw black or white.
-Using that logic I added the rules of conways game of life and bam celluar automata.
+Using that logic I added the rules of conways game of life and bam cellular automata.
