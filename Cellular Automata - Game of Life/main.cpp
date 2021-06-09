@@ -36,7 +36,7 @@ public:
 
     bool RandomReturn() {
         int num = rand() % 20 + 0;
-        if (num > 10) {
+        if (num > 13) {
             return true;
         }
         else {
@@ -99,7 +99,7 @@ public:
     }
 
 private:
-    int RectSize = 5;
+    int RectSize = 10;
     int XRectAmount;
     int YRectAmount;
     std::vector<std::vector<sf::RectangleShape>> _rect;
@@ -113,8 +113,8 @@ private:
 
 int main()
 {
-    int ScreenWidth = 800;
-    int ScreenHeight = 400;
+    int ScreenWidth = 1280;
+    int ScreenHeight = 720;
 
     srand(time(NULL));
     sf::RenderWindow window(sf::VideoMode(ScreenWidth, ScreenHeight), "Cellular Automata");
