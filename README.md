@@ -1,4 +1,4 @@
-# Cellular-Automata---Game-of-Life
+# Cellular-Automata-Game-of-Life
 
 My attempt at Cellular Automata using the sfml library.
 
