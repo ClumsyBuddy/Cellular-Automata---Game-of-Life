@@ -1,8 +1,3 @@
-//#define _SECURE_SCL 0
-//#define _SECURE_SCL_THROWS 0
-//#define _HAS_ITERATOR_DEBUGGING 0
-
-
 #include <SFML/Graphics.hpp>
 #include <iostream>
 #include <random>
@@ -109,7 +104,7 @@ public:
                 sf::Vector2f OldPos = _rect[i][j].getPosition();
                 sf::Vector2f NewSize = sf::Vector2f(OldSize.x + num, OldSize.y + num);
 
-                sf::Vector2f NewPos; //= sf::Vector2f(i * NewSize.x, j * NewSize.y);
+                sf::Vector2f NewPos;
 
                 float XDiff = (OldPos.x - i * OldSize.x);
                 float YDiff = (OldPos.y - j * OldSize.y);
@@ -165,7 +160,6 @@ int main()
     int ScreenHeight = 720;
 
     bool Pause = false;
-    //int CameraSpeed = 10;
     int ResizeOffset = 5;
 
     srand(time(NULL));
