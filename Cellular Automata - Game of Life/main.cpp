@@ -1,6 +1,6 @@
-#define _SECURE_SCL 0
-#define _SECURE_SCL_THROWS 0
-#define _HAS_ITERATOR_DEBUGGING 0
+//#define _SECURE_SCL 0
+//#define _SECURE_SCL_THROWS 0
+//#define _HAS_ITERATOR_DEBUGGING 0
 
 
 #include <SFML/Graphics.hpp>
@@ -15,6 +15,7 @@ public:
     CellManager(sf::RenderWindow &win, int Width, int Height) : window(win){
         XRectAmount = Width / RectSize;
         YRectAmount = Height/ RectSize;
+        CameraSpeed = RectSize * 1.5;
         InitRects();
     }
     ~CellManager(){}
@@ -32,8 +33,6 @@ public:
                     _rect[i][j].setFillColor(sf::Color::Black);
                 }
                 _rect[i][j].setSize(sf::Vector2f(RectSize, RectSize));
-                //_rect[i][j].setOutlineColor(sf::Color::Black);
-                //_rect[i][j].setOutlineThickness(0.7);
                 _rect[i][j].setPosition(i * RectSize, j *RectSize);
             }
         }
@@ -41,7 +40,7 @@ public:
 
     bool RandomReturn() {
         int num = rand() % 20 + 0;
-        if (num > 17) {
+        if (num > 13) {
             return true;
         }
         else {
@@ -90,6 +89,42 @@ public:
         }
     }
 
+    void ChangePosition(int x, int y) {
+        for (int i = 0; i < XRectAmount; i++) {
+            for (int j = 0; j < YRectAmount; j++) {
+                sf::Vector2f oldpos = _rect[i][j].getPosition();
+                _rect[i][j].setPosition(oldpos.x + x, oldpos.y + y);
+            }
+        }
+    }
+
+
+
+    void Resize(int num) {
+        for (int i = 0; i < XRectAmount; i++) {
+            for (int j = 0; j < YRectAmount; j++) {
+                sf::Vector2f OldSize = _rect[i][j].getSize();
+                if (OldSize.x <= 5 && num < 0)
+                    break;
+                sf::Vector2f OldPos = _rect[i][j].getPosition();
+                sf::Vector2f NewSize = sf::Vector2f(OldSize.x + num, OldSize.y + num);
+
+                sf::Vector2f NewPos; //= sf::Vector2f(i * NewSize.x, j * NewSize.y);
+
+                float XDiff = (OldPos.x - i * OldSize.x);
+                float YDiff = (OldPos.y - j * OldSize.y);
+                
+                NewPos.x = i * NewSize.x + XDiff;
+                NewPos.y = j * NewSize.y + YDiff;
+
+                _rect[i][j].setSize(NewSize);
+                _rect[i][j].setPosition(NewPos);
+                CameraSpeed = NewSize.x * 1.5;
+
+            }
+        }
+    }
+
     void UpdateColor(int i, int j) {
         if (cells[i][j] == true) {
             _rect[i][j].setFillColor(sf::Color::Black);
@@ -107,8 +142,11 @@ public:
         }
     }
 
+
+    float CameraSpeed;
+
 private:
-    int RectSize = 5;
+    int RectSize = 10;
     int XRectAmount;
     int YRectAmount;
     std::vector<std::vector<sf::RectangleShape>> _rect;
@@ -126,6 +164,8 @@ int main()
     int ScreenHeight = 720;
 
     bool Pause = false;
+    //int CameraSpeed = 10;
+    int ResizeOffset = 5;
 
     srand(time(NULL));
     sf::RenderWindow window(sf::VideoMode(ScreenWidth, ScreenHeight), "Cellular Automata");
@@ -140,14 +180,30 @@ int main()
         {
             if (event.type == sf::Event::Closed)
                 window.close();
+            if (event.type == sf::Event::MouseButtonPressed)
+            {
+                if (event.mouseButton.button == sf::Mouse::Left)
+                {
+                    CM.Resize(ResizeOffset);
+                }
+                else if (event.mouseButton.button == sf::Mouse::Right) {
+                    CM.Resize(-ResizeOffset);
+                }
+            }
         }
+        
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
-        {
-            Pause = true;
-        }
-        else {
-            Pause = false;
-        }
+            Pause = !Pause;
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
+            CM.ChangePosition(-CM.CameraSpeed, 0);
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
+            CM.ChangePosition(CM.CameraSpeed, 0);
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
+            CM.ChangePosition(0, -CM.CameraSpeed);
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
+            CM.ChangePosition(0, CM.CameraSpeed);
+
+
         window.clear();
         CM.Draw();
         window.display();
