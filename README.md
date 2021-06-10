@@ -1,5 +1,7 @@
 # Cellular-Automata-Game-of-Life
 
+![RoG7VmvIrI](https://user-images.githubusercontent.com/35859863/121563024-06e1f780-c9e8-11eb-9733-cf78e2679ad6.gif)
+
 My attempt at Cellular Automata using the sfml library.
 
 You can pause the simulation using the spacebar,
