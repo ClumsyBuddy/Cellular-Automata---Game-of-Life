@@ -168,6 +168,26 @@ int main()
     window.setFramerateLimit(10);
     CellManager CM(window, ScreenWidth, ScreenHeight);
 
+
+    sf::Text Controls;
+    sf::Font font;
+    if (!font.loadFromFile("arial.ttf"))
+    {
+        std::cout << "Could not load font" << std::endl;
+    }
+    Controls.setFont(font);
+    Controls.setString("wasd : movement, space : pause, mouseclicks : zoom in & out");
+    Controls.setCharacterSize(20);
+    Controls.setFillColor(sf::Color::Black);
+    Controls.setPosition(20, ScreenHeight - 30);
+
+    sf::RectangleShape Background;
+
+    Background.setSize(sf::Vector2f(600, 75));
+    Background.setPosition(sf::Vector2f(0, ScreenHeight - 40));
+    Background.setFillColor(sf::Color(255, 255, 255, 128));
+
+
     while (window.isOpen())
     {
         sf::Event event;
@@ -192,19 +212,21 @@ int main()
                 if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
                     Pause = !Pause;
                 if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
-                    CM.ChangePosition(-CM.CameraSpeed, 0);
-                if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
                     CM.ChangePosition(CM.CameraSpeed, 0);
+                if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
+                    CM.ChangePosition(-CM.CameraSpeed, 0);
                 if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
-                    CM.ChangePosition(0, -CM.CameraSpeed);
-                if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
                     CM.ChangePosition(0, CM.CameraSpeed);
+                if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
+                    CM.ChangePosition(0, -CM.CameraSpeed);
                 break;
             }
         }
 
         window.clear();
         CM.Draw();
+        window.draw(Background);
+        window.draw(Controls);
         window.display();
         if (Pause == false) {
             CM.Update();
