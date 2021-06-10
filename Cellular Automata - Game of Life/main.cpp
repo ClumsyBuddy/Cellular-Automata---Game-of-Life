@@ -15,7 +15,7 @@ public:
     CellManager(sf::RenderWindow &win, int Width, int Height) : window(win){
         XRectAmount = Width / RectSize;
         YRectAmount = Height/ RectSize;
-        CameraSpeed = RectSize * 1.5;
+        CameraSpeed = RectSize * CameraOffsetSpeed;
         InitRects();
     }
     ~CellManager(){}
@@ -119,7 +119,7 @@ public:
 
                 _rect[i][j].setSize(NewSize);
                 _rect[i][j].setPosition(NewPos);
-                CameraSpeed = NewSize.x * 1.5;
+                CameraSpeed = NewSize.x * CameraOffsetSpeed;
 
             }
         }
@@ -146,6 +146,7 @@ public:
     float CameraSpeed;
 
 private:
+    float CameraOffsetSpeed = 3;
     int RectSize = 10;
     int XRectAmount;
     int YRectAmount;
@@ -178,31 +179,35 @@ int main()
         sf::Event event;
         while (window.pollEvent(event))
         {
-            if (event.type == sf::Event::Closed)
+            switch (event.type) {
+            case sf::Event::Closed:
                 window.close();
-            if (event.type == sf::Event::MouseButtonPressed)
-            {
-                if (event.mouseButton.button == sf::Mouse::Left)
+                break;
+            case sf::Event::MouseButtonPressed:
+                switch (event.mouseButton.button)
                 {
+                case sf::Mouse::Left:
                     CM.Resize(ResizeOffset);
-                }
-                else if (event.mouseButton.button == sf::Mouse::Right) {
+                    break;
+                case sf::Mouse::Right:
                     CM.Resize(-ResizeOffset);
+                default:
+                    break;
                 }
+            case sf::Event::KeyPressed:
+                if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
+                    Pause = !Pause;
+                if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
+                    CM.ChangePosition(-CM.CameraSpeed, 0);
+                if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
+                    CM.ChangePosition(CM.CameraSpeed, 0);
+                if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
+                    CM.ChangePosition(0, -CM.CameraSpeed);
+                if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
+                    CM.ChangePosition(0, CM.CameraSpeed);
+                break;
             }
         }
-        
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
-            Pause = !Pause;
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
-            CM.ChangePosition(-CM.CameraSpeed, 0);
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
-            CM.ChangePosition(CM.CameraSpeed, 0);
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
-            CM.ChangePosition(0, -CM.CameraSpeed);
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
-            CM.ChangePosition(0, CM.CameraSpeed);
-
 
         window.clear();
         CM.Draw();
