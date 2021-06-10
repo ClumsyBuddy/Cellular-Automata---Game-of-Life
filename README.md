@@ -3,7 +3,7 @@
 My attempt at Cellular Automata using the sfml library.
 
 You can pause the simulation using the spacebar,
-Move using wasd and zoom using in and out using the mouse buttons.
+move using wasd and zoom in and out using the mouse buttons.
 
 I will most likely be coming back to this as I want more optimization out of it to run
 bigger simulations, right now it can do about 92,160 cells at 8-10 fps but I would like to aim for
